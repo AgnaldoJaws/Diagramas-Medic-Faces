@@ -1,0 +1,322 @@
+db_sistema_clinico
+
+CREATE TABLE convenio (
+  convenio_id int AUTO_INCREMENT,
+  nome_fantasia VARCHAR(45) NOT NULL,
+  razao_social varchar(45) not null,
+  cnpj varchar(20) NOT NULL,
+  endereco VARCHAR(30) NOT NULL,
+  ie varchar(12) not null,
+  cidade VARCHAR(30) NOT NULL,
+  email varchar(30) not null,
+  telefone varchar(11) not null,
+  
+  constraint pk_convenio_id PRIMARY KEY (convenio_id))
+
+
+
+CREATE TABLE paciente (
+  paciente_id int(9) AUTO_INCREMENT,
+  convenio_id int(9) NOT NULL,
+  nome_paciente VARCHAR(50),
+  cpf bigint NOT NULL,
+  rg VARCHAR (8) NOT NULL,
+  dataNascimento VARCHAR(10) NOT NULL,
+  endereco VARCHAR(50) NOT NULL,
+  cep VARCHAR(8) NOT NULL,
+  bairro VARCHAR(30) NOT NULL,
+  estado CHAR(2) NOT NULL,
+  cidade VARCHAR(20) NOT NULL,
+  complemento VARCHAR(30) NOT NULL,
+  celular VARCHAR(15) NOT NULL,
+  email VARCHAR(50) NOT NULL,
+  profissao VARCHAR(25) NOT NULL,
+  constraint pk_paciente_id PRIMARY KEY (paciente_id),
+  CONSTRAINT fk_convenio_id foreign key (convenio_id)
+  references convenio (convenio_id)
+  
+  )
+
+
+  CREATE TABLE especialidade (
+  especialidade_id INT AUTO_INCREMENT,
+  nome_especialidade VARCHAR(30) NOT NULL,
+  constraint pk_especialidade_id PRIMARY KEY (especialidade_id))
+
+
+
+CREATE TABLE profissional_saude (
+  profissional_saude_id int AUTO_INCREMENT,
+  especialidade_id INT NOT NULL,
+  crm VARCHAR(15),
+  nome_especialista VARCHAR(30) NOT NULL,
+  endereco VARCHAR(30) NOT NULL,
+  bairro VARCHAR(30) NOT NULL,
+  cidade VARCHAR(30) NOT NULL,
+  estado CHAR(2) NOT NULL,
+  complemento VARCHAR(30) NOT NULL,
+  telefone VARCHAR(11) NOT NULL,
+  cpf INT NOT NULL,
+  rg INT NOT NULL,
+  conselho_profissional VARCHAR(30) NOT NULL,
+  outras_informacoes VARCHAR(50),
+  constraint pk_profissional_saude_id PRIMARY KEY (profissional_saude_id),
+  Constraint fk_especialidade_id foreign key (especialidade_id)
+  references especialidade (especialidade_id))
+  
+  
+
+  CREATE TABLE funcionario (
+  funcionario_id INT AUTO_INCREMENT,
+  nome_funcionario VARCHAR(20) NOT NULL,
+  cargo VARCHAR(20) NOT NULL,
+  endereco VARCHAR(30) NOT NULL,
+  bairro VARCHAR(30) NOT NULL,
+  cidade VARCHAR(30) NOT NULL,
+  estado CHAR(2) NOT NULL,
+  complemento VARCHAR(30) NOT NULL,
+  telefone VARCHAR(11) NOT NULL,
+  cpf INT NOT NULL,
+  rg INT NOT NULL, 
+  constraint pk_funcionario_id primary key (funcionario_id))
+
+CREATE TABLE tipo_preco(
+idtipo int auto_increment,
+tipo VARCHAR(30) NOT NULL,
+constraint pk_idtipo primary key (idtipo))
+   
+
+ CREATE TABLE preco (
+  idpreco INT auto_increment,
+  idtipo INT not null,
+  vlr_consulta int not null,
+  constraint pk_idpreco primary key (idpreco),
+  constraint fk_idtipo_preco foreign key(idtipo)
+  references tipo_preco(idtipo))
+    
+
+
+create table Agendamento (
+id_agendamento int AUTO_INCREMENT,
+Id_paciente int NOT NULL,
+Id_funcionario int NOT NULL,
+profissional_saude_id int not null,
+Data Date NOT NULL,
+Horario time NOT NULL,
+constraint pk_Agendamento_Id primary key(id_agendamento),
+CONSTRAINT FK_AGENDAMENTO_ID_profissional_saude FOREIGN KEY (profissional_saude_id) REFERENCES profissional_saude(profissional_saude_id),
+Constraint fk_Agendamento_Id_funcionario foreign key (Id_funcionario) references funcionario(funcionario_id),
+Constraint fk_Agendamento_Id_paciente foreign Key (Id_paciente) references paciente(paciente_id))
+
+ 
+  
+
+   CREATE TABLE triagem (
+  triagem_id int AUTO_INCREMENT,
+  agendamento_id int not null,
+  peso VARCHAR(5) NOT NULL,
+  movimentos_respiratorios VARCHAR(30) NULL,
+  circulacao VARCHAR(30) NOT NULL,
+  nivel_consciencia VARCHAR(30) NOT NULL,
+  temperatura VARCHAR(3) NOT NULL,
+  pressao_arterial VARCHAR(5) NOT NULL,
+  altura VARCHAR(4) NOT NULL,
+  idade VARCHAR(3) NOT NULL,
+  hipertenso CHAR(3) NOT NULL,
+  diabetes CHAR(3) NOT NULL,
+  uso_medicacao CHAR(3) NOT NULL,
+  tipo_medicacao VARCHAR(50) NOT NULL,
+  constraint pk_triagem_id primary key (triagem_id),
+  constraint fk_agendamento_id foreign key (agendamento_id)
+  references agendamento(id_agendamento))
+  
+    
+  create table laudo(
+  laudo_id int auto_increment,
+  descricao varchar(100) not null,
+  data date not null,
+  profissional_saude_id int not null, 
+  constraint pk_laudo_id primary key (laudo_id),
+  constraint fk_profissional_saude_id foreign key(profissional_saude_id)
+  references profissional_saude(profissional_saude_id)
+  )
+  
+  
+  CREATE TABLE consulta(
+  consulta_id int AUTO_INCREMENT,
+  id_agendamento int not null,
+  idpreco INT NOT NULL,
+  data_abertura DATE NOT NULL,
+  data_consulta DATE NOT NULL,
+  hora_consulta DATETIME NOT NULL,
+  forma_pagamento varchar (30) not null,
+  status_agendamento VARCHAR(10) NOT NULL,
+  produto_remedio_id INT  NULL,
+  triagem_id int not NULL,
+  laudo_id int not null,
+  queixa VARCHAR(100) NOT NULL,
+  diagnostico VARCHAR(100) NOT NULL,
+  prescricao_medica VARCHAR(100) NOT NULL,
+  guia_exame VARCHAR(100) NOT NULL,
+  obs VARCHAR(100) NOT NULL,
+  constraint pk_consulta_id primary key (consulta_id),
+  constraint fk_triagem_id foreign key (triagem_id) 
+  references triagem(triagem_id),
+  constraint fk_laudo_id foreign key (laudo_id)
+  references laudo(laudo_id),
+  constraint fk_agedamento_id foreign key (id_agendamento)
+  references agendamento(id_agendamento),
+  constraint fk_idpreco foreign key (idpreco)
+  references  preco(idpreco))
+  
+  
+    CREATE TABLE produto(
+  id_produto int auto_increment,
+  descricao varchar(30) not null,
+  locacao varchar(30) not null,
+  saldo int not null,
+  qme int not null,
+  constraint pk_produto_id primary key (id_produto)
+  )
+  
+  create table produto_consulta(
+  id_produto_consulta int auto_increment,
+  id_produto int not null, 
+  id_consulta int not null, 
+  constraint pk_produto_id primary key (id_produto_consulta),
+  constraint fk_produto_id foreign key (id_produto)
+  references produto(id_produto),
+  constraint fk_consulta_id foreign key (id_consulta)
+  references consulta(consulta_id)
+  )
+  
+  
+  
+ 
+  CREATE TABLE fornecedor (
+  fornecedor_id INT auto_increment,
+  nome_empresa  VARCHAR(50) NOT NULL,
+  cnpj VARCHAR(12) NOT NULL,
+  endereco VARCHAR(50) NOT NULL,
+  cep VARCHAR(8) NOT NULL,
+  bairro VARCHAR(20) NOT NULL,
+  estado VARCHAR(50) NOT NULL,
+  cidade VARCHAR(50) NOT NULL,
+  complemento VARCHAR(50) NOT NULL,
+  celular VARCHAR(15) NOT NULL,
+  email VARCHAR(50) NOT NULL,
+  constraint pk_fornecedor_id primary key (fornecedor_id))
+  
+
+
+CREATE TABLE compra(
+  compra_id INT auto_increment,
+  data datetime not null,
+  preco_id int not null,
+  fornecedor_id INT NOT NULL, 
+  forma_pagamento VARCHAR(45) NOT NULL,
+  qtd_parcelas VARCHAR(45) NOT NULL,
+  vlr_parcela int not null, 
+  status VARCHAR(45) NOT NULL,
+  obs VARCHAR(45) NOT NULL,
+  constraint pk_compras_id primary key (compra_id),
+  constraint fk_preco_id foreign key (preco_id)
+  references preco (idpreco),
+  constraint fk_fornecedor_id foreign key (fornecedor_id)
+  references fornecedor (fornecedor_id))
+  
+  
+   CREATE TABLE estoque_remedio (
+  estoque_remedio_id INT auto_increment,
+  descricao varchar(50) not null,
+  compras_id INT NOT NULL,
+  nome_remedio VARCHAR(45) NOT NULL,
+  desc_remedio VARCHAR(45) NOT NULL,
+  qtd_remedio VARCHAR(45) NOT NULL,
+  data_entrada DATE NOT NULL,
+  data_saida date not null,
+  qtd int not null,
+  valorCusto double not null,
+  saldo_atual double not null,
+  data_vencimento VARCHAR(45) NOT NULL,
+  constraint pk_estoque_remedio_id primary key (estoque_remedio_id),
+  constraint fk_compras_id foreign key (compras_id)
+  references compra(compra_id))
+  
+  CREATE TABLE itensCompra(
+  id_itens int auto_increment,
+  id_produto int not null,
+  id_compra int not null,
+  qtd_produto int not null,
+  valor_unitario int not null,
+  valor_total int not null,
+  constraint pk_itens_id primary key (id_itens),
+  constraint pk_produto_id foreign key (id_produto)
+  references produto(id_produto),
+  constraint fk_compra_id foreign key (id_compra)
+  references compra(compra_id))
+
+  
+  create table movimentacao_estoque(
+  id_movimentacao int auto_increment,
+  data date not null,
+  id_itens_compra int not null,
+  id_consulta int not null,
+  id_funcionario int not null,
+  qtd int not null,
+  constraint pk_movimentacao_id primary key (id_movimentacao),
+  constraint fk_consulta foreign key (id_consulta)
+  references consulta(consulta_id),
+  constraint fk_itens_compra foreign key (id_itens_compra)
+  references itensCompra(id_itens)
+  )
+
+
+ CREATE TABLE contas_pagar (
+  contas_pagar_id INT NOT NULL,
+  compras_id INT NOT NULL,
+  id_funcionario INT NOT NULL,
+  data_pagamento DATE NOT NULL,
+  vencimento date not null,
+  valor_parcela double not null,
+  qtd_parcelas int not null,
+  forma_pagamento VARCHAR(15) NOT NULL,
+  status_pagamento VARCHAR(45) NOT NULL,
+  constraint pk_contas_pagar_id primary key (contas_pagar_id),
+  constraint fk_funcionario_id foreign key (id_funcionario)
+  references funcionario(funcionario_id),
+  constraint fk_compras foreign key (compras_id)
+  references compra (compra_id))
+
+
+CREATE TABLE contas_receber (
+  contas_receber_id INT NOT NULL,
+  consulta_id INT NOT NULL,
+  vlr_total  INT NOT NULL,
+  cpf_atendente INT NOT NULL,
+  forma_pagamento INT NOT NULL,
+  qtd_parcelas INT NOT NULL,
+  vlr_parcelas INT NOT NULL,
+  data_pag_parcela INT NOT NULL,
+  status_pagamento varchar (45) not null,
+   constraint pk_contas_receber_id primary key (contas_receber_id),
+  constraint fk_consulta_agenda_id foreign key (consulta_id)
+  references consulta(consulta_id))
+
+
+  CREATE TABLE lancamentos(
+  id_lancamentos int auto_increment,
+  contas_pagar_id INT  NULL,
+  contas_receber_id INT  NULL,
+  data date not null,
+  valor double not null,
+  obs varchar (45)  not null,
+  constraint pk_id_lancamentos primary key (id_lancamentos),
+  constraint fk_contas_pagar_id foreign key (contas_pagar_id)
+  references contas_pagar (contas_pagar_id), 
+  constraint fk_contas_receber_id foreign key(contas_receber_id)
+  references contas_receber (contas_receber_id))
+
+
+
+  
